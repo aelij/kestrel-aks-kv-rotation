@@ -1,5 +1,12 @@
 # Kestrel/AKS certificate auto-rotation test
 
+## Prerequisites
+* Azure CLI
+* Docker CLI
+* .NET 8 SDK
+* PowerShell 7
+
+## Steps
 1. Set up the environment:
    ```powershell
    $name = 'test1'
