@@ -59,7 +59,7 @@ function Deploy {
   Write-Host 'Building' -ForegroundColor Magenta
   dotnet publish --sc -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true
   docker build ./bin/Release/net8.0/linux-x64/publish -f ./Dockerfile | Tee-Object -Variable dockerBuildOutput
-  $digest = ($dockerBuildOutput | Select-String '\bsha256:\w+').Matches[0].Value
+  $digest = ($dockerBuildOutput | Select-String '\bsha256:\w+').Matches | Select-Object -Last 1 -ExpandProperty Value
   $tag = "$AcrName.azurecr.io/tests/test1:latest"
   docker image tag $digest $tag
 
