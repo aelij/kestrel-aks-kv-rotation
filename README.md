@@ -7,14 +7,20 @@
 * PowerShell 7
 
 ## Steps
+1. Log into Azure:
+   ```powershell
+   az login
+   ```
 1. Set up the environment:
    ```powershell
    $name = 'test1'
    $location = 'westeurope'
+   ```
 1. Deploy:
    ```powershell
    ./deploy.ps1 -ResourceGroup $name -Location  $location -ClusterName $name -VaultName  $name -AcrName $name
    ```
+   :bulb: The Key Vault and ACR names have to be globally unique
 1. Check certificates by running the above command with `-Action ShowCertOnDisk` and `-Action ShowTlsCert`.
 1. Rotate certificates by running the above command with `-Action RotateCert`.
 1. Check certificates again.
