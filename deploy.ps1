@@ -37,6 +37,7 @@ function Deploy {
   az aks create -n $ClusterName -g $ResourceGroup -l $Location `
     --enable-oidc-issuer --enable-workload-identity `
     --enable-addons azure-keyvault-secrets-provider --enable-secret-rotation `
+    --no-ssh-key `
   | ConvertFrom-Json | Tee-Object -Variable aks
 
   Write-Host 'Creating MI' -ForegroundColor Magenta
