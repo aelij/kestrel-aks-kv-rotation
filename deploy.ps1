@@ -43,7 +43,7 @@ function Deploy {
   Write-Host 'Creating MI' -ForegroundColor Magenta
   az identity create -n $kvIdentityName --resource-group $ResourceGroup | ConvertFrom-Json | Tee-Object -Variable kvIdentity
   az identity federated-credential create -n 'aks' --identity-name $kvIdentityName --resource-group $ResourceGroup `
-    --issuer $aks.oidcIssuerProfile.issuerUrl --subject 'system:serviceaccount:default:test1'
+    --issuer $aks.oidcIssuerProfile.issuerUrl --subject 'system:serviceaccount:default:auto-rotation-test'
 
   Write-Host 'Assigning roles' -ForegroundColor Magenta
   $currentUser = az ad signed-in-user show | ConvertFrom-Json
@@ -61,7 +61,7 @@ function Deploy {
   dotnet publish --sc -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true
   docker build ./bin/Release/net8.0/linux-x64/publish -f ./Dockerfile | Tee-Object -Variable dockerBuildOutput
   $digest = ($dockerBuildOutput | Select-String '\bsha256:\w+').Matches | Select-Object -Last 1 -ExpandProperty Value
-  $tag = "$AcrName.azurecr.io/tests/test1:latest"
+  $tag = "$AcrName.azurecr.io/tests/auto-rotation-test:latest"
   docker image tag $digest $tag
 
   Write-Host 'Pushing' -ForegroundColor Magenta
@@ -75,7 +75,7 @@ function Deploy {
 
   Write-Host 'Deploying pod' -ForegroundColor Magenta
   az aks get-credentials -n $ClusterName -g $ResourceGroup
-  $yaml = (Get-Content ./test1.yml) `
+  $yaml = (Get-Content ./auto-rotation-test.yml) `
     -replace '{{acrName}}', $AcrName `
     -replace '{{kvName}}', $VaultName `
     -replace '{{kvClientId}}', $kvIdentity.clientId `
@@ -95,12 +95,12 @@ switch ($Action) {
     CreateCert
   }
   'ShowTlsCert' {
-    kubectl exec test1 -- openssl s_client -connect localhost:5001
+    kubectl exec auto-rotation-test -- openssl s_client -connect localhost:5001
   }
   'ShowCertOnDisk' {
-    kubectl exec test1 -- cat /certs/cert1.crt
+    kubectl exec auto-rotation-test -- cat /certs/cert1.crt
   }
   'ShowLogs' {
-    kubectl logs test1
+    kubectl logs auto-rotation-test
   }
 }

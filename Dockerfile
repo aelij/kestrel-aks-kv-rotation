@@ -1,5 +1,17 @@
-FROM mcr.microsoft.com/dotnet/runtime:8.0.0-preview.7-cbl-mariner2.0
-RUN yum install -y openssl
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:8.0-cbl-mariner AS build
+WORKDIR /source
+
+COPY *.csproj .
+RUN dotnet restore --use-current-runtime
+
 COPY . .
-ENTRYPOINT ["/app/test1"]
+RUN dotnet publish --use-current-runtime --self-contained false --no-restore -o /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-cbl-mariner
+WORKDIR /app
+
+RUN tdnf install -y openssl
+
+COPY --from=build /app .
+
+ENTRYPOINT ["/app/auto-rotation-test"]

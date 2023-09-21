@@ -1,7 +1,7 @@
 apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
-  name: test1
+  name: auto-rotation-test
 spec:
   parameters:
     clientID: {{kvClientId}}
@@ -21,19 +21,19 @@ kind: ServiceAccount
 metadata:
   annotations:
     azure.workload.identity/client-id: {{kvClientId}}
-  name: test1
+  name: auto-rotation-test
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: test1
+  name: auto-rotation-test
   labels:
     azure.workload.identity/use: 'true'
 spec:
-  serviceAccountName: test1
+  serviceAccountName: auto-rotation-test
   containers:
-  - name: test1
-    image: '{{acrName}}.azurecr.io/tests/test1:latest'
+  - name: auto-rotation-test
+    image: '{{acrName}}.azurecr.io/tests/auto-rotation-test:latest'
     volumeMounts:
     - name: certs
       mountPath: /certs
@@ -44,5 +44,5 @@ spec:
         driver: secrets-store.csi.k8s.io
         readOnly: true
         volumeAttributes:
-          secretProviderClass: test1
+          secretProviderClass: auto-rotation-test
 ---

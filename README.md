@@ -1,19 +1,19 @@
 # Kestrel/AKS certificate auto-rotation test
 
 ## Prerequisites
+* PowerShell 7
 * Azure CLI
 * Docker CLI
-* .NET 8 SDK
-* PowerShell 7
 
 ## Steps
 1. Log into Azure:
    ```powershell
    az login
+   az account set -s <subscription>
    ```
 1. Set up the environment:
    ```powershell
-   $name = 'test1'
+   $name = 'auto-rotation-test'
    $location = 'westeurope'
    ```
 1. Deploy:
